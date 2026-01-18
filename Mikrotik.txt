@@ -1,0 +1,28 @@
+## ROUNTER 1##
+/ip address add address=172.16.200.1/16 interface=ether1
+/ip address add address=192.200.10.1/24 interface=ether2
+/ip route add gateway=172.16.0.1
+/ip dns set servers=8.8.8.8
+/ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade
+/ip proxy set enable=yes port=3128 cache-administrator=admin@sekolah.sch.id
+/ip firewall nat add chain=dstnat protocol=tcp dst-port=80 action=redirect to-ports=3128 in-interface=ether2
+/ip proxy access add dst-host=www.linux.org action=deny
+/routing ospf interface add interface=ether1
+/routing ospf network add network=172.16.0.0/16 area=backbone
+/routing ospf network add network=192.200.10.0/24 area=backbone
+
+## ROUTER 2 ##
+/ip address add address=172.16.100.1/16 interface=ether1
+/ip address add address=192.100.20.1/24 interface=wlan1
+/ip route add gateway=172.16.0.1
+/ip dns set servers=8.8.8.8
+/ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade
+/interface enable wlan1
+/interface wireless set 0 mode=ap-bridge ssid="joko" band=2ghz-b/g/n frequency=2437
+/interface wireless security-profiles set 0 mode=dynamic-keys authentication-types=wpa2-psk wpa2-pre-shared-key=paijo123
+/ip dhcp-server setup
+/routing ospf interface add interface=ether1
+/routing ospf network add network=172.16.0.0/16 area=backbone
+/routing ospf network add network=192.100.20.0/24 area=backbone
+
+## END ##
