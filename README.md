@@ -26,63 +26,49 @@ Digunakan untuk:
 - Identitas router
 - IP lokal ke jaringan client
 
-🌐 2. Internet Gateway (NAT & Route)
+## 2. 🌐 Internet Gateway (NAT & Route)
 
-Agar client di bawah router bisa akses internet.
+Biar client di bawah router bisa buka Google.
 
 ```bash
 /ip route add gateway=192.168.1.1
 /ip dns set servers=8.8.8.8,8.8.4.4 allow-remote-requests=yes
 /ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade
+
 ```
 
-Konsep ujian:
-- Default route
-- DNS
-- NAT masquerade
+## 3. 🛡️ Web Proxy & Blocking
 
-🛡️ 3. Web Proxy & Blocking
-  💡 Biasanya bagian poin terbesar di ujian.
+Ini biasanya bagian yang paling banyak poinnya di ujian.
 
-Aktifkan Web Proxy
 ```bash
-/ip proxy set enabled=yes port=3128 cache-administrator=admin@sekolah.sch.id
-```
-Redirect HTTP ke Proxy
-```bash
-/ip firewall nat add chain=dstnat protocol=tcp dst-port=80 action=redirect to-ports=3128
-```
-Blokir Website (Contoh)
-```bash
-/ip proxy access add dst-host=httpforever.com action=deny
-```
-Catatan penting:
-- Proxy hanya bekerja untuk HTTP (port 80)
-- HTTPS tidak sepenuhnya bisa diblok tanpa metode tambahan
+# Aktifkan Proxy
+/ip proxy set enabled=yes port=8080 cache-administrator=admin@sekolah.sch.id
 
-🛣️ 4. Static Routing
-Digunakan jika diminta routing ke network lain.
+# Redirect Traffic HTTP (Port 80) ke Proxy (Port 8080)
+/ip firewall nat add chain=dstnat protocol=tcp dst-port=80 action=redirect to-ports=8080
+
+# Contoh Blokir Situs (misal: linux.org)
+/ip proxy access add dst-host=www.linux.org action=deny
+
+```
+
+## 🛣️ 4. Static Routing (Add Address)
+
+Kalau disuruh routing ke network sebelah:
+
 ```bash
 /ip route add dst-address=10.10.10.0/24 gateway=192.168.1.2
-```
-Pastikan:
-- Gateway bisa diping
-- Tidak ada konflik network
 
-💡 Pro Tips
-Cek koneksi setelah NAT:
-```bash
-ping 8.8.8.8
 ```
-Gunakan tombol Tab untuk auto-complete agar minim typo.
-Kalau konfigurasi kacau:
-```bash
-/system reset-configuration no-defaults=yes
-```
-Reset bukan kalah — reset itu strategi.
 
-🌸 Meme of the Day
+## 🌸 Meme of the Day
 
-“Kalau merah berarti salah,
-kalau biru berarti benar,
-kalau item… berarti kamu lupa nyalain routernya.”
+> **"Kalo merah berarti salah, kalo biru berarti bener, kalo item... berarti kamu lupa nyalain routernya."**
+
+### 💡 Pro-Tips Terakhir:
+
+1. **Cek Koneksi:** Selalu `ping 8.8.8.8` dari terminal setelah setting NAT.
+2. **Tab Key:** Gunakan tombol **Tab** di keyboard buat auto-complete perintah biar nggak typo.
+3. **Reset is Life:** Kalau settingan berantakan, ketik: `/system reset-configuration no-defaults=yes`.
+**Reset bukan kalah — reset itu strategi.**
